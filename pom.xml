@@ -8,11 +8,24 @@
 		<version>3.3.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>VNPT_Project</artifactId>
+	<groupId>com.backend</groupId>
+	<artifactId>VNPT_Intern_Project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>VNPT_Project</name>
+	<name>VNPT_Intern_Project</name>
 	<description>Project for my internship at VNPTIT (June 10 - September 10, 2024)</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
