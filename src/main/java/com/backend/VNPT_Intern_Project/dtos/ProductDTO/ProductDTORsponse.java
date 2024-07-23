@@ -1,44 +1,22 @@
 package com.backend.VNPT_Intern_Project.dtos.ProductDTO;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public class ProductDTO {
-    @NotNull
+public class ProductDTORsponse {
     private String uuidProduct;
-
-    @NotNull
     private String title;
-
     private String metaTitle;
-
     private String summary;
-
-    @NotNull
     private Short type;
-
-    @NotNull
     private Double price;
-
-    @NotNull
     private Short quantity;
-
-    @NotNull
     private LocalDateTime createdDate;
-
     private LocalDateTime updatedDate;
-
     private LocalDateTime publishedDate;
-
     private String description;
-
-    @NotNull
     private String brand;
-
     private String category;
-
     private Map<String, String> otherAttributes;
 
     // Getters and Setters
