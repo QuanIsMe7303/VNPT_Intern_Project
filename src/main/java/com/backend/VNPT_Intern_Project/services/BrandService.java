@@ -1,7 +1,6 @@
 package com.backend.VNPT_Intern_Project.services;
 
-import com.backend.VNPT_Intern_Project.dtos.BrandDTO.BrandDTO;
-import com.backend.VNPT_Intern_Project.entities.Brand;
+import com.backend.VNPT_Intern_Project.dtos.BrandDTO.BrandDTOResponse;
 import com.backend.VNPT_Intern_Project.repositories.BrandRepository;
 import com.backend.VNPT_Intern_Project.services.interfaces.IBrandInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,8 @@ public class BrandService implements IBrandInterface {
     private BrandRepository brandRepository;
 
     @Override
-    public List<BrandDTO> getAllBrands() throws Exception {
-        List<BrandDTO> brandList = brandRepository.findAll();
+    public List<BrandDTOResponse> getAllBrands() throws Exception {
+        List<BrandDTOResponse> brandList = brandRepository.findAll();
         if(brandList.isEmpty()) {
             throw new Exception("Brands are not found!");
         }

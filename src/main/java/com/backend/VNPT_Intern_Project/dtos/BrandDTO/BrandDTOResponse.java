@@ -2,7 +2,7 @@ package com.backend.VNPT_Intern_Project.dtos.BrandDTO;
 
 import java.time.LocalDateTime;
 
-public class BrandDTO {
+public class BrandDTOResponse {
     private String uuidBrand;
     private String name;
     private LocalDateTime createdDate;

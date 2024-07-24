@@ -3,7 +3,7 @@ package com.backend.VNPT_Intern_Project.dtos.ProductDTO;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public class ProductDTORsponse {
+public class ProductDTOResponse {
     private String uuidProduct;
     private String title;
     private String metaTitle;

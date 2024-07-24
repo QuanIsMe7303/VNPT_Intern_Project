@@ -1,7 +1,7 @@
 package com.backend.VNPT_Intern_Project.repositories;
 
 import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORsponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
 import com.backend.VNPT_Intern_Project.repositories.DTOMapper.ProductDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -20,17 +20,17 @@ public class ProductRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<ProductDTORsponse> getAllProducts() {
+    public List<ProductDTOResponse> getAllProducts() {
         String sql = "SELECT * FROM product p";
         return jdbcTemplate.query(sql, new ProductDTOMapper(jdbcTemplate));
     }
 
-    public List<ProductDTORsponse> getProductById(String uuid_product) {
+    public List<ProductDTOResponse> getProductById(String uuid_product) {
         String sql = "SELECT * FROM product p WHERE p.uuid_product = ?";
         return jdbcTemplate.query(sql, new Object[]{uuid_product}, new ProductDTOMapper(jdbcTemplate));
     }
 
-    public List<ProductDTORsponse> getProductsByBrandName(String brand_name) {
+    public List<ProductDTOResponse> getProductsByBrandName(String brand_name) {
         String sql =
                 "SELECT * FROM brand b " +
                 "LEFT JOIN product p " +
@@ -39,7 +39,7 @@ public class ProductRepository {
         return jdbcTemplate.query(sql, new Object[]{brand_name}, new ProductDTOMapper(jdbcTemplate));
     }
 
-    public List<ProductDTORsponse> getProductsByCategoryName(String category_name) {
+    public List<ProductDTOResponse> getProductsByCategoryName(String category_name) {
         String sql =
                 "SELECT * FROM category c " +
                 "LEFT JOIN product_category pc ON c.uuid_category = pc.uuid_category " +
@@ -48,7 +48,7 @@ public class ProductRepository {
         return jdbcTemplate.query(sql, new Object[]{category_name}, new ProductDTOMapper(jdbcTemplate));
     }
 
-    public List<ProductDTORsponse> getProductsByBrandAndCategory(String brand_name, String category_name) {
+    public List<ProductDTOResponse> getProductsByBrandAndCategory(String brand_name, String category_name) {
         String sql =
                 "SELECT * FROM category c " +
                 "LEFT JOIN product_category pc ON c.uuid_category = pc.uuid_category " +
@@ -58,7 +58,7 @@ public class ProductRepository {
         return jdbcTemplate.query(sql, new Object[]{brand_name, category_name}, new ProductDTOMapper(jdbcTemplate));
     }
 
-    public List<ProductDTORsponse> createProduct(ProductDTORequest product) {
+    public List<ProductDTOResponse> createProduct(ProductDTORequest product) {
         String createProductQuery =
                 "INSERT INTO product (uuid_product, title, meta_title, summary, type, price, quantity, created_date, updated_date, published_date, description, uuid_brand) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?)";
@@ -122,7 +122,7 @@ public class ProductRepository {
         return getProductById(newProductID);
     }
 
-    public List<ProductDTORsponse> updateProduct(ProductDTORequest product, String uuid_product) {
+    public List<ProductDTOResponse> updateProduct(ProductDTORequest product, String uuid_product) {
         String findProductIDQuery = "SELECT uuid_product FROM product WHERE uuid_product = ?";
         String findBrandIdQuery = "SELECT uuid_brand FROM brand WHERE name = ?";
 
@@ -208,8 +208,8 @@ public class ProductRepository {
         return getProductById(productID);
     }
 
-    public List<ProductDTORsponse> deleteProduct(String uuid_product) {
-        List<ProductDTORsponse> product = getProductById(uuid_product);
+    public List<ProductDTOResponse> deleteProduct(String uuid_product) {
+        List<ProductDTOResponse> product = getProductById(uuid_product);
 
         if (product != null) {
             // Xóa sản phẩm ở ProductAttribute

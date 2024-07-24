@@ -1,6 +1,6 @@
 package com.backend.VNPT_Intern_Project.repositories.DTOMapper;
 
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORsponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProductDTOMapper implements RowMapper<ProductDTORsponse> {
+public class ProductDTOMapper implements RowMapper<ProductDTOResponse> {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,8 +19,8 @@ public class ProductDTOMapper implements RowMapper<ProductDTORsponse> {
     }
 
     @Override
-    public ProductDTORsponse mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ProductDTORsponse productDTORsponse = new ProductDTORsponse();
+    public ProductDTOResponse mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ProductDTOResponse productDTORsponse = new ProductDTOResponse();
         productDTORsponse.setUuidProduct(rs.getString("p.uuid_product"));
         productDTORsponse.setTitle(rs.getString("p.title"));
         productDTORsponse.setMetaTitle(rs.getString("p.meta_title"));

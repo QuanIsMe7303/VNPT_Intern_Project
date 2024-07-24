@@ -1,7 +1,6 @@
 package com.backend.VNPT_Intern_Project.controllers;
 
-import com.backend.VNPT_Intern_Project.dtos.BrandDTO.BrandDTO;
-import com.backend.VNPT_Intern_Project.entities.Brand;
+import com.backend.VNPT_Intern_Project.dtos.BrandDTO.BrandDTOResponse;
 import com.backend.VNPT_Intern_Project.services.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,7 @@ public class BrandController {
     @GetMapping("")
     public ResponseEntity<?> getAllBrands(){
         try{
-            List<BrandDTO> brandList = brandService.getAllBrands();
+            List<BrandDTOResponse> brandList = brandService.getAllBrands();
             return new ResponseEntity<>(brandList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
