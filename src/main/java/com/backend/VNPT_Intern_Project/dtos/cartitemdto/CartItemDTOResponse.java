@@ -1,6 +1,7 @@
-package com.backend.vnptproject.dtos.cartitemdto;
+package com.backend.VNPT_Intern_Project.dtos.cartitemdto;
 
-import com.backend.vnptproject.dtos.productdto.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
+import lombok.Data;
 
 @Data
 public class CartItemDTOResponse {

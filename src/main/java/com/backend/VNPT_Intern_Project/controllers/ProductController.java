@@ -1,13 +1,13 @@
-package com.backend.vnptproject.controllers;
+package com.backend.VNPT_Intern_Project.controllers;
 
-import com.backend.vnptproject.dtos.ApiResponse;
-import com.backend.vnptproject.dtos.AttributeDTO.AttributeDTORequest;
-import com.backend.vnptproject.dtos.AttributeDTO.AttributeDTOResponse;
-import com.backend.vnptproject.dtos.ProductDTO.ProductDTORequest;
-import com.backend.vnptproject.dtos.ProductDTO.ProductDTOResponse;
-import com.backend.vnptproject.exception.ApiRequestException;
-import com.backend.vnptproject.services.AttributeService;
-import com.backend.vnptproject.services.ProductService;
+import com.backend.VNPT_Intern_Project.dtos.ApiResponse;
+import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.exception.ApiRequestException;
+import com.backend.VNPT_Intern_Project.services.AttributeService;
+import com.backend.VNPT_Intern_Project.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

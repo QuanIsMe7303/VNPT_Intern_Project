@@ -1,15 +1,15 @@
-package com.backend.vnptproject.services;
+package com.backend.VNPT_Intern_Project.services;
 
-import com.backend.vnptproject.dtos.attributedto.AttributeDTORequest;
-import com.backend.vnptproject.dtos.attributedto.AttributeDTOResponse;
-import com.backend.vnptproject.entities.Attribute;
-import com.backend.vnptproject.entities.Product;
-import com.backend.vnptproject.entities.ProductAttribute;
-import com.backend.vnptproject.exception.ResourceNotFoundException;
-import com.backend.vnptproject.repositories.AttributeRepository;
-import com.backend.vnptproject.repositories.ProductAttributeRepository;
-import com.backend.vnptproject.repositories.ProductJpaRepository;
-import com.backend.vnptproject.services.interfaces.IAttributeInterface;
+import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTOResponse;
+import com.backend.VNPT_Intern_Project.entities.Attribute;
+import com.backend.VNPT_Intern_Project.entities.Product;
+import com.backend.VNPT_Intern_Project.entities.ProductAttribute;
+import com.backend.VNPT_Intern_Project.exception.ResourceNotFoundException;
+import com.backend.VNPT_Intern_Project.repositories.AttributeRepository;
+import com.backend.VNPT_Intern_Project.repositories.ProductAttributeRepository;
+import com.backend.VNPT_Intern_Project.repositories.ProductRepository;
+import com.backend.VNPT_Intern_Project.services.interfaces.IAttributeInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class AttributeService implements IAttributeInterface {
     private AttributeRepository attributeRepository;
 
     @Autowired
-    private ProductJpaRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
     private ProductAttributeRepository productAttributeRepository;
@@ -49,6 +49,7 @@ public class AttributeService implements IAttributeInterface {
         AttributeDTOResponse response = new AttributeDTOResponse();
 
         response.setUuidProductAttribute(productAttribute.getUuidProductAttribute());
+        response.setUuid_attribute(existingAttribute.getUuidAttribute());
         response.setUuid_product(product.getUuidProduct());
         response.setProductName(product.getTitle());
         response.setKey(existingAttribute.getAttributeKey());
@@ -83,6 +84,7 @@ public class AttributeService implements IAttributeInterface {
         AttributeDTOResponse response = new AttributeDTOResponse();
 
         response.setUuidProductAttribute(uuidProductAttribute);
+        response.setUuid_attribute(existingAttribute.getUuidAttribute());
         response.setUuid_product(product.getUuidProduct());
         response.setProductName(product.getTitle());
         response.setKey(existingAttribute.getAttributeKey());

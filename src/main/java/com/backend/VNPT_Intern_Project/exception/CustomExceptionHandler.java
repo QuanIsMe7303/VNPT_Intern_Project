@@ -1,4 +1,4 @@
-package com.backend.vnptproject.exception;
+package com.backend.VNPT_Intern_Project.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

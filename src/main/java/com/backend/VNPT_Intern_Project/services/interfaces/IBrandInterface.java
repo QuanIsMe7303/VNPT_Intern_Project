@@ -1,6 +1,6 @@
-package com.backend.vnptproject.services.interfaces;
+package com.backend.VNPT_Intern_Project.services.interfaces;
 
-import com.backend.vnptproject.entities.Brand;
+import com.backend.VNPT_Intern_Project.entities.Brand;
 
 import java.util.List;
 

@@ -1,16 +1,15 @@
-package com.backend.vnptproject.services;
+package com.backend.VNPT_Intern_Project.services;
 
-import com.backend.vnptproject.dtos.productdto.ProductDTORequest;
-import com.backend.vnptproject.dtos.productdto.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
 import com.backend.VNPT_Intern_Project.entities.*;
-import com.backend.vnptproject.entities.*;
-import com.backend.vnptproject.exception.ResourceNotFoundException;
-import com.backend.vnptproject.repositories.AttributeRepository;
-import com.backend.vnptproject.repositories.BrandRepository;
-import com.backend.vnptproject.repositories.CategoryRepository;
-import com.backend.vnptproject.repositories.ProductAttributeRepository;
-import com.backend.vnptproject.repositories.ProductJpaRepository;
-import com.backend.vnptproject.services.interfaces.IProductInterface;
+import com.backend.VNPT_Intern_Project.exception.ResourceNotFoundException;
+import com.backend.VNPT_Intern_Project.repositories.AttributeRepository;
+import com.backend.VNPT_Intern_Project.repositories.BrandRepository;
+import com.backend.VNPT_Intern_Project.repositories.CategoryRepository;
+import com.backend.VNPT_Intern_Project.repositories.ProductAttributeRepository;
+import com.backend.VNPT_Intern_Project.repositories.ProductRepository;
+import com.backend.VNPT_Intern_Project.services.interfaces.IProductInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService implements IProductInterface {
     @Autowired
-    private ProductJpaRepository productJpaRepository;
+    private ProductRepository productJpaRepository;
 
     @Autowired
     private BrandRepository brandRepository;

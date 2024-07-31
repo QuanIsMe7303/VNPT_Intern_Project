@@ -1,7 +1,7 @@
-package com.backend.vnptproject.services.interfaces;
+package com.backend.VNPT_Intern_Project.services.interfaces;
 
-import com.backend.vnptproject.dtos.productdto.ProductDTORequest;
-import com.backend.vnptproject.dtos.productdto.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.backend.vnptproject.dtos.cartitemdto;
+package com.backend.VNPT_Intern_Project.dtos.cartitemdto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

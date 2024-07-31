@@ -1,4 +1,4 @@
-package com.backend.vnptproject.entities;
+package com.backend.VNPT_Intern_Project.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.backend.vnptproject.dtos.productdto;
+package com.backend.VNPT_Intern_Project.dtos.ProductDTO;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

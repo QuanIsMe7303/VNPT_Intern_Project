@@ -1,4 +1,4 @@
-package com.backend.vnptproject;
+package com.backend.VNPT_Intern_Project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

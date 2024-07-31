@@ -1,4 +1,4 @@
-package com.backend.vnptproject.dtos;
+package com.backend.VNPT_Intern_Project.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

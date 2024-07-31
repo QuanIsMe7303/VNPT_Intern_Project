@@ -1,4 +1,4 @@
-package com.backend.vnptproject.exception;
+package com.backend.VNPT_Intern_Project.exception;
 
 import java.util.Date;
 

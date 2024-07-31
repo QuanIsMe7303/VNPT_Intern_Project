@@ -1,4 +1,4 @@
-package com.backend.vnptproject.entities;
+package com.backend.VNPT_Intern_Project.entities;
 
 import java.io.Serializable;
 import java.util.Objects;

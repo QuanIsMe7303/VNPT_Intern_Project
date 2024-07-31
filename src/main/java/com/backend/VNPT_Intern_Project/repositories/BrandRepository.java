@@ -1,6 +1,6 @@
-package com.backend.vnptproject.repositories;
+package com.backend.VNPT_Intern_Project.repositories;
 
-import com.backend.vnptproject.entities.Brand;
+import com.backend.VNPT_Intern_Project.entities.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

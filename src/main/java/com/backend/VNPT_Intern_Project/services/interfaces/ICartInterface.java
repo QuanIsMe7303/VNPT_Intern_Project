@@ -1,7 +1,7 @@
-package com.backend.vnptproject.services.interfaces;
+package com.backend.VNPT_Intern_Project.services.interfaces;
 
-import com.backend.vnptproject.dtos.cartitemdto.CartItemDTORequest;
-import com.backend.vnptproject.dtos.cartitemdto.CartItemDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.cartitemdto.CartItemDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.cartitemdto.CartItemDTOResponse;
 
 import java.util.List;
 
