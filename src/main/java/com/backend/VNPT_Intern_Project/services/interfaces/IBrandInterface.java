@@ -1,10 +1,10 @@
-package com.backend.VNPT_Intern_Project.services.interfaces;
+package com.backend.vnptproject.services.interfaces;
 
-import com.backend.VNPT_Intern_Project.dtos.BrandDTO.BrandDTOResponse;
+import com.backend.vnptproject.entities.Brand;
 
 import java.util.List;
 
 public interface IBrandInterface {
-    List<BrandDTOResponse> getAllBrands() throws Exception;
+    List<Brand> getAllBrands();
 
 }

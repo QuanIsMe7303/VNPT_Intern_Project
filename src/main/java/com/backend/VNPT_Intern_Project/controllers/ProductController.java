@@ -1,14 +1,17 @@
-package com.backend.VNPT_Intern_Project.controllers;
+package com.backend.vnptproject.controllers;
 
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTOResponse;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
-import com.backend.VNPT_Intern_Project.services.AttributeService;
-import com.backend.VNPT_Intern_Project.services.ProductService;
+import com.backend.vnptproject.dtos.ApiResponse;
+import com.backend.vnptproject.dtos.AttributeDTO.AttributeDTORequest;
+import com.backend.vnptproject.dtos.AttributeDTO.AttributeDTOResponse;
+import com.backend.vnptproject.dtos.ProductDTO.ProductDTORequest;
+import com.backend.vnptproject.dtos.ProductDTO.ProductDTOResponse;
+import com.backend.vnptproject.exception.ApiRequestException;
+import com.backend.vnptproject.services.AttributeService;
+import com.backend.vnptproject.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,121 +28,90 @@ public class ProductController {
     @Autowired
     private AttributeService attributeService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable String id) {
+    @GetMapping("")
+    public ResponseEntity<?> getProducts(@RequestParam(required = false) String brand,
+                                         @RequestParam(required = false) String category,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(required = false, defaultValue = "10") int size,
+                                         @RequestParam(defaultValue = "title") String sortBy) {
         try {
-            List<ProductDTOResponse> product = productService.getProductById(id);
-            if (product.isEmpty()) {
-                return new ResponseEntity<>("Không tồn tại sản phẩm", HttpStatus.NOT_FOUND);
+            PageRequest pageable = PageRequest.of(page, size, Sort.by(sortBy));
+            List<ProductDTOResponse> products;
+            if (brand != null && category != null) {
+                products = productService.getProductsByBrandAndCategory(brand, category, pageable);
+            } else if (brand != null) {
+                products = productService.getProductsByBrandName(brand, pageable);
+            } else if (category != null) {
+                products = productService.getProductsByCategoryName(category, pageable);
             } else {
-                return new ResponseEntity<>(product, HttpStatus.OK);
+                products = productService.getAllProducts(pageable);
             }
-
+            ApiResponse<List<ProductDTOResponse>> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", products);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            throw new ApiRequestException("Error while fetching product: " + e.getMessage());
         }
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getProducts(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String category) {
-        try {
-            List<ProductDTOResponse> products = List.of();
-            if (brand != null && category != null) {
-                products = productService.getProductsByBrandAndCategory(brand, category);
-            } else if (brand != null) {
-                products = productService.getProductsByBrandName(brand);
-            } else if (category != null) {
-                products = productService.getProductsByCategoryName(category);
-            } else {
-                products = productService.getAllProducts();
-            }
-
-            if (products.isEmpty()) {
-                return new ResponseEntity<>("Không tồn tại sản phẩm", HttpStatus.NOT_FOUND);
-            } else {
-                return new ResponseEntity<>(products, HttpStatus.OK);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProductById(@PathVariable String id) {
+        ProductDTOResponse product = productService.getProductById(id);
+        ApiResponse<ProductDTOResponse> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", product);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("")
     public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTORequest newProduct) {
-        try {
-            List<ProductDTOResponse> product = productService.createProduct(newProduct);
-            return new ResponseEntity<>(product, new HttpHeaders(), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        ProductDTOResponse product = productService.createProduct(newProduct);
+        ApiResponse<ProductDTOResponse> response = new ApiResponse<>(HttpStatus.CREATED.value(), "SUCCESS", product);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@Valid @RequestBody ProductDTORequest newProduct, @PathVariable String id) {
-        try {
-            List<ProductDTOResponse> product = productService.updateProduct(newProduct, id);
-            return new ResponseEntity<>(product, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        ProductDTOResponse product = productService.updateProduct(id, newProduct);
+        ApiResponse<ProductDTOResponse> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", product);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable String id) {
-        try {
-            List<ProductDTOResponse> product = productService.deleteProduct(id);
-            return new ResponseEntity<>(product, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        productService.deleteProduct(id);
+        ApiResponse<ProductDTOResponse> response = new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "SUCCESS", null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/attribute")
     public ResponseEntity<?> addAttributeToProduct(@Valid @RequestBody AttributeDTORequest attribute) {
-        try {
-            AttributeDTOResponse newAttribute = attributeService.addAttributeToProduct(attribute);
-            if (newAttribute != null) {
-                return new ResponseEntity<>(newAttribute, HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        AttributeDTOResponse newAttribute = attributeService.addAttributeToProduct(attribute);
+        ApiResponse<AttributeDTOResponse> response = new ApiResponse<>(HttpStatus.CREATED.value(), "SUCCESS", newAttribute);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/attribute")
-    public ResponseEntity<?> updateAttribute(@Valid @RequestBody AttributeDTORequest attribute) {
-        try {
-            AttributeDTOResponse product = attributeService.updateAttribute(attribute);
-            if (product != null) {
-                return new ResponseEntity<>(product, HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @PutMapping("/attribute/{uuidProductAttribute}")
+    public ResponseEntity<?> updateAttribute(@PathVariable String uuidProductAttribute, @Valid @RequestBody AttributeDTORequest attribute) {
+        AttributeDTOResponse product = attributeService.updateAttribute(uuidProductAttribute, attribute);
+        ApiResponse<AttributeDTOResponse> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", product);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("/attribute")
-    public ResponseEntity<?> updateAttribute(@RequestParam(required = true) String attributeId,
-                                             @RequestParam(required = true) String productId) {
-        try {
-            AttributeDTOResponse attribute = attributeService.deleteAttribute(attributeId, productId);
-            if (attribute != null) {
-                return new ResponseEntity<>(attribute, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
+    @DeleteMapping("/attribute/{uuidProductAttribute}")
+    public ResponseEntity<?> deleteAttribute(@PathVariable String uuidProductAttribute) {
+        AttributeDTOResponse attribute = attributeService.deleteAttribute(uuidProductAttribute);
+        ApiResponse<AttributeDTOResponse> response = new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "SUCCESS", attribute);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

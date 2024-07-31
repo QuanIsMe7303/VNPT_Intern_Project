@@ -1,49 +1,46 @@
-package com.backend.VNPT_Intern_Project.entities;
+package com.backend.vnptproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
+@Table(name = "brand")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Brand {
     @Id
-    private String uuid_brand;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_brand", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private String uuidBrand;
+
+    @Column(name = "name")
+    @NotNull
     private String name;
-    private LocalDateTime created_date;
-    private LocalDateTime updated_date;
 
-    // Getters and Setters
+    @Column(name = "created_date")
+    @CreatedDate
+    private LocalDateTime createdDate;
 
-    public String getUuid_brand() {
-        return uuid_brand;
-    }
+    @Column(name = "updated_date")
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
 
-    public void setUuid_brand(String uuid_brand) {
-        this.uuid_brand = uuid_brand;
-    }
+    @Column(name = "published_date")
+    private LocalDateTime publishedDate;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getCreated_date() {
-        return created_date;
-    }
-
-    public void setCreated_date(LocalDateTime created_date) {
-        this.created_date = created_date;
-    }
-
-    public LocalDateTime getUpdated_date() {
-        return updated_date;
-    }
-
-    public void setUpdated_date(LocalDateTime updated_date) {
-        this.updated_date = updated_date;
-    }
+    @OneToMany(mappedBy = "brand")
+    private List<Product> products;
 }

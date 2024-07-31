@@ -1,51 +1,41 @@
-package com.backend.VNPT_Intern_Project.entities;
+package com.backend.vnptproject.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
+@Table(name = "attribute")
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Attribute {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_attribute", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     private String uuidAttribute;
 
-    private String key;
+    @NotNull
+    @Column(name = "attribute_key")
+    private String attributeKey;
 
+    @Column(name = "created_date")
+    @CreatedDate
     private LocalDateTime createdDate;
 
+    @Column(name = "updated_date")
+    @LastModifiedDate
     private LocalDateTime updatedDate;
 
-    // Getters and Setters
-
-    public String getUuidAttribute() {
-        return uuidAttribute;
-    }
-
-    public void setUuidAttribute(String uuidAttribute) {
-        this.uuidAttribute = uuidAttribute;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(LocalDateTime updatedDate) {
-        this.updatedDate = updatedDate;
-    }
 }
+

@@ -1,119 +1,77 @@
-package com.backend.VNPT_Intern_Project.entities;
+package com.backend.vnptproject.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "product")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
     @Id
-    private String uuid_product;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_product", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private String uuidProduct;
+
+    @NotBlank
+    @Size(max = 255)
+    @Column(name = "title")
     private String title;
-    private String meta_title;
+
+    @Column(name = "meta_title")
+    private String metaTitle;
+
+    @Column(name = "summary")
     private String summary;
-    private Short type;
+
+    @Column(name = "type")
+    private Integer type;
+
+    @NotNull
+    @Min(0)
+    @Column(name = "price")
     private Double price;
-    private Short quantity;
-    private LocalDateTime created_date;
-    private LocalDateTime updated_date;
-    private LocalDateTime published_date;
+
+    @Min(0)
+    @Column(name = "quantity")
+    private Integer quantity;
+
+    @Column(name = "created_date")
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date")
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
+
+    @Column(name = "published_date")
+    private LocalDateTime publishedDate;
+
+    @Column(name = "description")
     private String description;
-    private String uuid_brand;
 
-    public String getUuid_product() {
-        return uuid_product;
-    }
+    @ManyToOne
+    @JoinColumn(name = "uuid_brand", referencedColumnName = "uuid_brand")
+    private Brand brand;
 
-    public void setUuid_product(String uuid_product) {
-        this.uuid_product = uuid_product;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getMeta_title() {
-        return meta_title;
-    }
-
-    public void setMeta_title(String meta_title) {
-        this.meta_title = meta_title;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public Short getType() {
-        return type;
-    }
-
-    public void setType(Short type) {
-        this.type = type;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Short getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Short quantity) {
-        this.quantity = quantity;
-    }
-
-    public LocalDateTime getCreated_date() {
-        return created_date;
-    }
-
-    public void setCreated_date(LocalDateTime created_date) {
-        this.created_date = created_date;
-    }
-
-    public LocalDateTime getUpdated_date() {
-        return updated_date;
-    }
-
-    public void setUpdated_date(LocalDateTime updated_date) {
-        this.updated_date = updated_date;
-    }
-
-    public LocalDateTime getPublished_date() {
-        return published_date;
-    }
-
-    public void setPublished_date(LocalDateTime published_date) {
-        this.published_date = published_date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUuid_brand() {
-        return uuid_brand;
-    }
-
-    public void setUuid_brand(String uuid_brand) {
-        this.uuid_brand = uuid_brand;
-    }
+    @ManyToOne
+    @JoinColumn(name = "uuid_category")
+    @JsonIgnoreProperties({"productList"})
+    private Category category;
 }

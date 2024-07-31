@@ -1,60 +1,42 @@
-package com.backend.VNPT_Intern_Project.entities;
+package com.backend.vnptproject.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.List;
 
 @Entity
+@Table(name = "category")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Category {
     @Id
-    private String uuid_category;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_category", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private String uuidCategory;
 
+    @NotNull
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "meta_title")
     private String meta_title;
 
+    @NotNull
+    @Column(name = "slug")
     private String slug;
 
+    @Column(name = "content")
     private String content;
 
-    // Getters and Setters
+    @OneToMany(mappedBy = "category")
+    private List<Product> productList;
 
-
-    public String getUuid_category() {
-        return uuid_category;
-    }
-
-    public void setUuid_category(String uuid_category) {
-        this.uuid_category = uuid_category;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getMeta_title() {
-        return meta_title;
-    }
-
-    public void setMeta_title(String meta_title) {
-        this.meta_title = meta_title;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

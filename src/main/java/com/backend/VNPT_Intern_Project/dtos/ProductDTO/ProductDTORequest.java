@@ -1,113 +1,39 @@
-package com.backend.VNPT_Intern_Project.dtos.ProductDTO;
+package com.backend.vnptproject.dtos.productdto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 public class ProductDTORequest {
-    @NotNull
+    @NotNull(message = "Title is required")
     private String title;
 
     private String metaTitle;
 
     private String summary;
 
-    @NotNull
-    private Short type;
+    @NotNull(message = "Type is required")
+    @Min(value = 0, message = "must be greater than or equal to 0")
+    private Integer type;
 
-    @NotNull
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "must be greater than or equal to 0")
     private Double price;
 
-    @NotNull
-    private Short quantity;
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "must be greater than or equal to 0")
+    private Integer quantity;
 
     private LocalDateTime publishedDate;
 
     private String description;
 
-    @NotNull
+    @NotNull(message = "is required")
     private String brand;
 
+    @NotNull(message = "is required")
     private String category;
-
-    // Getters and Setters
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getMetaTitle() {
-        return metaTitle;
-    }
-
-    public void setMetaTitle(String metaTitle) {
-        this.metaTitle = metaTitle;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public Short getType() {
-        return type;
-    }
-
-    public void setType(Short type) {
-        this.type = type;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Short getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Short quantity) {
-        this.quantity = quantity;
-    }
-
-    public LocalDateTime getPublishedDate() {
-        return publishedDate;
-    }
-
-    public void setPublishedDate(LocalDateTime publishedDate) {
-        this.publishedDate = publishedDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }

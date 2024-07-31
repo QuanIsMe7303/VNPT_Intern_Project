@@ -1,10 +1,10 @@
 package com.backend.vnptproject.repositories;
 
-import com.backend.vnptproject.entities.Brand;
+import com.backend.vnptproject.entities.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, String> {
-    Brand findByName(String brandName);
+public interface CategoryRepository extends JpaRepository<Category, String> {
+    Category findByTitle(String title);
 }

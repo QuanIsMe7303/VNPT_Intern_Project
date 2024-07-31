@@ -1,16 +1,12 @@
-package com.backend.VNPT_Intern_Project.services.interfaces;
+package com.backend.vnptproject.services.interfaces;
 
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTOResponse;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
-
-import java.util.List;
+import com.backend.vnptproject.dtos.attributedto.AttributeDTORequest;
+import com.backend.vnptproject.dtos.attributedto.AttributeDTOResponse;
 
 public interface IAttributeInterface {
-    AttributeDTOResponse addAttributeToProduct(AttributeDTORequest attribute) throws Exception;
+    AttributeDTOResponse addAttributeToProduct(AttributeDTORequest attribute);
 
-    AttributeDTOResponse updateAttribute(AttributeDTORequest attributeDTORequest) throws Exception;
+    AttributeDTOResponse updateAttribute(String uuidProductAttribute, AttributeDTORequest attributeRequest);
 
-    AttributeDTOResponse deleteAttribute(String uuid_attribute, String uuid_product) throws Exception;
+    AttributeDTOResponse deleteAttribute(String uuidProductAttribute);
 }

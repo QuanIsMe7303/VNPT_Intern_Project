@@ -1,30 +1,32 @@
-package com.backend.VNPT_Intern_Project.entities;
+package com.backend.vnptproject.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "product_category")
 @IdClass(ProductCategoryId.class)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class ProductCategory {
     @Id
-    private String uuid_product;
+    @Column(name = "uuid_product")
+    private String uuidProduct;
+
     @Id
-    private String uuid_category;
+    @Column(name = "uuid_category")
+    private String uuidCategory;
 
-    // Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "uuid_product", insertable = false, updatable = false)
+    private Product product;
 
-    public String getUuid_product() {
-        return uuid_product;
-    }
-
-    public void setUuid_product(String uuid_product) {
-        this.uuid_product = uuid_product;
-    }
-
-    public String getUuid_category() {
-        return uuid_category;
-    }
-
-    public void setUuid_category(String uuid_category) {
-        this.uuid_category = uuid_category;
-    }
+    @ManyToOne
+    @JoinColumn(name = "uuid_category", insertable = false, updatable = false)
+    private Category category;
 }
+
