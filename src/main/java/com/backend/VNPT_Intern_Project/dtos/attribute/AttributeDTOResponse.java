@@ -1,4 +1,4 @@
-package com.backend.VNPT_Intern_Project.dtos.AttributeDTO;
+package com.backend.VNPT_Intern_Project.dtos.attribute;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,10 @@
 package com.backend.VNPT_Intern_Project.controllers;
 
 import com.backend.VNPT_Intern_Project.dtos.ApiResponse;
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.AttributeDTO.AttributeDTOResponse;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.attribute.AttributeDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.attribute.AttributeDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.product.ProductDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.product.ProductDTOResponse;
 import com.backend.VNPT_Intern_Project.exception.ApiRequestException;
 import com.backend.VNPT_Intern_Project.services.AttributeService;
 import com.backend.VNPT_Intern_Project.services.ProductService;

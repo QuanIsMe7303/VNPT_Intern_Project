@@ -1,5 +1,6 @@
 package com.backend.VNPT_Intern_Project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -41,6 +42,7 @@ public class Brand {
     @Column(name = "published_date")
     private LocalDateTime publishedDate;
 
-    @OneToMany(mappedBy = "brand")
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Product> products;
 }

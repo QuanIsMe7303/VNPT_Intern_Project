@@ -28,7 +28,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDetails> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        ErrorDetails errorDetails = new ErrorDetails("CONFLICT", ex.getMessage(), 409, new Date()   );
+        ErrorDetails errorDetails = new ErrorDetails("CONFLICT", ex.getMessage(), 409, new Date());
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorDetails> handleConflictException(ConflictException ex) {
+        ErrorDetails errorDetails = new ErrorDetails("CONFLICT", ex.getMessage(), 409, new Date());
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
@@ -45,6 +51,7 @@ public class CustomExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails("VALIDATION_FAILED", errorMessage, 400, new Date());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex) {

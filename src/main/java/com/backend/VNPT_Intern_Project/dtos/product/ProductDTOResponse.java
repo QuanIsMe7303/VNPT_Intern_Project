@@ -1,4 +1,4 @@
-package com.backend.VNPT_Intern_Project.dtos.ProductDTO;
+package com.backend.VNPT_Intern_Project.dtos.product;
 
 import lombok.Data;
 

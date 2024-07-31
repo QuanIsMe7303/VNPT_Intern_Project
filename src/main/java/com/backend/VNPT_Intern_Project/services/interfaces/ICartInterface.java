@@ -1,7 +1,7 @@
 package com.backend.VNPT_Intern_Project.services.interfaces;
 
-import com.backend.VNPT_Intern_Project.dtos.cartitemdto.CartItemDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.cartitemdto.CartItemDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.cartitem.CartItemDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.cartitem.CartItemDTOResponse;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ public interface ICartInterface {
 
     CartItemDTOResponse getCartItemById(String uuidCartItem);
 
-    CartItemDTOResponse addCartItem(String uuidUser, CartItemDTORequest cartItemDTORequest);
+    CartItemDTOResponse addCartItem(String uuidCart, CartItemDTORequest cartItemDTORequest);
 
-    CartItemDTOResponse updateCartItem(String uuidUser, CartItemDTORequest cartItemDTORequest);
+    CartItemDTOResponse updateCartItem(String uuidCartItem, CartItemDTORequest cartItemDTORequest);
 
     CartItemDTOResponse deleteCartItem(String uuidCartItem);
 }

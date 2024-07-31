@@ -1,101 +1,67 @@
 package com.backend.VNPT_Intern_Project.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "cart_item")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class CartItem {
     @Id
-    private String uuid_cart_item;
-    private String uuid_cart;
-    private String uuid_product;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "uuid_cart_item", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
+    private String uuidCartItem;
+
+    @Column(name = "uuid_cart")
+    @NotNull
+    private String uuidCart;
+
+    @Column(name = "uuid_product")
+    @NotNull
+    private String uuidProduct;
+
+    @Column(name = "price")
+    @NotNull
     private Double price;
+
+    @Column(name = "discount")
+    @NotNull
     private Double discount;
-    private Short quantity;
-    private Short active;
+
+    @Column(name = "quantity")
+    @Min(1)
+    @NotNull
+    private Integer quantity;
+
+    @Column(name = "active")
+    @NotNull
+    private Integer active;
+
+    @Column(name = "content")
     private String content;
-    private LocalDateTime created_date;
-    private LocalDateTime updated_date;
 
-    public String getUuid_cart_item() {
-        return uuid_cart_item;
-    }
+    @Column(name = "created_date")
+    @CreatedDate
+    private LocalDateTime createdDate;
 
-    public void setUuid_cart_item(String uuid_cart_item) {
-        this.uuid_cart_item = uuid_cart_item;
-    }
+    @Column(name = "updated_date")
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
 
-    public String getUuid_cart() {
-        return uuid_cart;
-    }
-
-    public void setUuid_cart(String uuid_cart) {
-        this.uuid_cart = uuid_cart;
-    }
-
-    public String getUuid_product() {
-        return uuid_product;
-    }
-
-    public void setUuid_product(String uuid_product) {
-        this.uuid_product = uuid_product;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
-    }
-
-    public Short getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Short quantity) {
-        this.quantity = quantity;
-    }
-
-    public Short getActive() {
-        return active;
-    }
-
-    public void setActive(Short active) {
-        this.active = active;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getCreated_date() {
-        return created_date;
-    }
-
-    public void setCreated_date(LocalDateTime created_date) {
-        this.created_date = created_date;
-    }
-
-    public LocalDateTime getUpdated_date() {
-        return updated_date;
-    }
-
-    public void setUpdated_date(LocalDateTime updated_date) {
-        this.updated_date = updated_date;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uuid_cart", referencedColumnName = "uuid_cart", insertable = false, updatable = false)
+    private User user;
 }

@@ -1,7 +1,7 @@
 package com.backend.VNPT_Intern_Project.services.interfaces;
 
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.ProductDTO.ProductDTOResponse;
+import com.backend.VNPT_Intern_Project.dtos.product.ProductDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.product.ProductDTOResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -21,5 +21,5 @@ public interface IProductInterface {
 
     ProductDTOResponse updateProduct( String uuid_product, ProductDTORequest product);
 
-    void deleteProduct(String uuid_product);
+    ProductDTOResponse deleteProduct(String uuid_product);
 }

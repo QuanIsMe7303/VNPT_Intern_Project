@@ -1,4 +1,4 @@
-package com.backend.VNPT_Intern_Project.dtos.BrandDTO;
+package com.backend.VNPT_Intern_Project.dtos.brand;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
