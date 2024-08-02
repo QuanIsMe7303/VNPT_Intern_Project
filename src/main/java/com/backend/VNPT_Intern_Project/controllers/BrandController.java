@@ -19,11 +19,7 @@ public class BrandController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllBrands(){
-        try{
-            List<Brand> brandList = brandService.getAllBrands();
-            return new ResponseEntity<>(brandList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        List<Brand> brandList = brandService.getAllBrands();
+        return new ResponseEntity<>(brandList, HttpStatus.OK);
     }
 }

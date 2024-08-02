@@ -11,12 +11,20 @@ import lombok.NoArgsConstructor;
 
 public class CartItemDTOResponse {
     private String uuidCartItem;
-    private String uuidCart;
-    private Product product;
+    private String uuidUser;
+    private ProductCartItemResponse product;
     private Double price;
     private Double discount;
     private Integer quantity;
     private Integer active;
     private String content;
+
+    @Data
+    public static class ProductCartItemResponse {
+        private String uuidProduct;
+        private String productName;
+        private Double price;
+        private Integer quantityInStock;
+    }
 }
 

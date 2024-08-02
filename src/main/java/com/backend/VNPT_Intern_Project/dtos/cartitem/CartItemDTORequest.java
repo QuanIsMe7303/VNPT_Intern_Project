@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class CartItemDTORequest {
 
     @NotNull(message = "is required")
-    private String uuid_product;
+    private String uuidProduct;
 
     @NotNull(message = "is required") @Min(value = 1, message = " is at least 1")
     private Integer quantity;

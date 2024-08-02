@@ -19,7 +19,7 @@ public class CartItemController {
     @Autowired
     private CartService cartService;
 
-    @GetMapping("cart-items/{id}")
+    @GetMapping("/cart-items/{id}")
     public ResponseEntity<?> getCartItemById(@PathVariable String id) {
         CartItemDTOResponse cartItemDTOResponse = cartService.getCartItemById(id);
         ApiResponse<CartItemDTOResponse> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", cartItemDTOResponse);
@@ -40,14 +40,14 @@ public class CartItemController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{uuid_cart_item}")
+    @PutMapping("/cart-items/{uuid_cart_item}")
     public ResponseEntity<?> updateCartItem(@Valid @RequestBody CartItemDTORequest cartItemDTORequest, @PathVariable String uuid_cart_item) {
         CartItemDTOResponse cartItemDTOResponse = cartService.updateCartItem(uuid_cart_item, cartItemDTORequest);
         ApiResponse<CartItemDTOResponse> response = new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", cartItemDTOResponse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{uuid_cart_item}")
+    @DeleteMapping("/cart-items/{uuid_cart_item}")
     public ResponseEntity<?> deleteCartItem(@PathVariable String uuid_cart_item) {
         CartItemDTOResponse cartItemDTOResponse = cartService.deleteCartItem(uuid_cart_item);
         ApiResponse<CartItemDTOResponse> response = new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "SUCCESS", cartItemDTOResponse);

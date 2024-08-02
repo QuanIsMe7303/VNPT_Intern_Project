@@ -1,5 +1,7 @@
 package com.backend.VNPT_Intern_Project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,16 +9,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
 @Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 
 public class User {
     @Id
@@ -25,9 +28,9 @@ public class User {
     @Column(name = "uuid_user", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     private String uuidUser;
 
-    @NotNull
-    @Column(name = "uuid_cart")
-    private String uuidCart;
+//    @NotNull
+//    @Column(name = "uuid_cart")
+//    private String uuidCart;
 
     @Column(name = "first_name")
     private String firstName;
@@ -68,7 +71,11 @@ public class User {
     @Column(name = "activate")
     private Integer activate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CartItem> cartItems;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Order> orderList;
 }

@@ -36,7 +36,7 @@ public class CartService implements ICartInterface {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found with id: " + uuidUser));
 
-        List<CartItem> cartItems = cartRepository.findByUuidCart(user.getUuidCart());
+        List<CartItem> cartItems = cartRepository.findByUuidUser(uuidUser);
 
         if (cartItems.isEmpty()) {
             throw new ResourceNotFoundException("Cart items is not found!");
@@ -55,29 +55,33 @@ public class CartService implements ICartInterface {
     }
 
     @Transactional
-    public CartItemDTOResponse addCartItem(String uuidCart, CartItemDTORequest cartItemDTORequest) {
-        User user = userRepository.findByUuidCart(uuidCart);
-        if (user == null) {
-            throw new ResourceNotFoundException("Cart is not found with id: " + uuidCart);
+    public CartItemDTOResponse addCartItem(String uuidUser, CartItemDTORequest cartItemDTORequest) {
+        User user = userRepository.findById(uuidUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not found with id: " + uuidUser));
+
+        Product product = productRepository.findById(cartItemDTORequest.getUuidProduct())
+                .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + cartItemDTORequest.getUuidProduct()));
+
+        if (product.getQuantity() < cartItemDTORequest.getQuantity()) {
+            throw new ConflictException("Requested quantity exceeds available stock. Available: " + product.getQuantity());
         }
 
-        Product product = productRepository.findById(cartItemDTORequest.getUuid_product())
-                .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + cartItemDTORequest.getUuid_product()));
-
-        boolean productExistsInCart = cartRepository.existsByCartAndProduct(uuidCart, cartItemDTORequest.getUuid_product());
-
+        // Neu san pham da co trong gio thì khong them dc
+        boolean productExistsInCart = cartRepository.existsByCartAndProduct(uuidUser, cartItemDTORequest.getUuidProduct());
         if (productExistsInCart) {
             throw new ConflictException("Product already exists in the cart.");
         }
 
         CartItem newCartItem = new CartItem();
 
-        newCartItem.setUuidCart(user.getUuidCart());
-        newCartItem.setUuidProduct(product.getUuidProduct());
+//        newCartItem.setUuidCart(user.getUuidCart());
+        newCartItem.setUuidUser(user.getUuidUser());
+        newCartItem.setUuidProduct(cartItemDTORequest.getUuidProduct());
         newCartItem.setPrice(product.getPrice() * (1 - cartItemDTORequest.getDiscount()) * cartItemDTORequest.getQuantity());
         newCartItem.setDiscount(cartItemDTORequest.getDiscount());
         newCartItem.setQuantity(cartItemDTORequest.getQuantity());
         newCartItem.setActive(cartItemDTORequest.getActive());
+        newCartItem.setProduct(product);
 
         if (cartItemDTORequest.getContent() != null) {
             newCartItem.setContent(cartItemDTORequest.getContent());
@@ -124,12 +128,18 @@ public class CartService implements ICartInterface {
     private CartItemDTOResponse convertToDTO(CartItem cartItem) {
         CartItemDTOResponse dto = new CartItemDTOResponse();
         dto.setUuidCartItem(cartItem.getUuidCartItem());
-        dto.setUuidCart(cartItem.getUuidCart());
+        dto.setUuidUser(cartItem.getUuidUser());
 
         Product product = productRepository.findById(cartItem.getUuidProduct())
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + cartItem.getUuidProduct()));
 
-        dto.setProduct(product);
+        CartItemDTOResponse.ProductCartItemResponse productCartItemResponse = new CartItemDTOResponse.ProductCartItemResponse();
+        productCartItemResponse.setUuidProduct(product.getUuidProduct());
+        productCartItemResponse.setProductName(product.getTitle());
+        productCartItemResponse.setPrice(product.getPrice());
+        productCartItemResponse.setQuantityInStock(product.getQuantity());
+
+        dto.setProduct(productCartItemResponse);
         dto.setPrice(cartItem.getPrice());
         dto.setDiscount(cartItem.getDiscount());
         dto.setQuantity(cartItem.getQuantity());

@@ -1,5 +1,6 @@
 package com.backend.VNPT_Intern_Project.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CartItem {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -25,43 +25,49 @@ public class CartItem {
     @Column(name = "uuid_cart_item", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     private String uuidCartItem;
 
-    @Column(name = "uuid_cart")
     @NotNull
-    private String uuidCart;
+    @Column(name = "uuid_user")
+    private String uuidUser;
 
-    @Column(name = "uuid_product")
     @NotNull
+    @Column(name = "uuid_product")
     private String uuidProduct;
 
-    @Column(name = "price")
     @NotNull
+    @Column(name = "price")
     private Double price;
 
-    @Column(name = "discount")
     @NotNull
+    @Column(name = "discount")
     private Double discount;
 
-    @Column(name = "quantity")
     @Min(1)
     @NotNull
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "active")
     @NotNull
+    @Column(name = "active")
     private Integer active;
 
     @Column(name = "content")
     private String content;
 
-    @Column(name = "created_date")
     @CreatedDate
+    @Column(name = "created_date")
     private LocalDateTime createdDate;
 
-    @Column(name = "updated_date")
     @LastModifiedDate
+    @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uuid_cart", referencedColumnName = "uuid_cart", insertable = false, updatable = false)
+    @JoinColumn(name = "uuid_user", referencedColumnName = "uuid_user", insertable = false, updatable = false)
+    @JsonIgnore
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uuid_product", referencedColumnName = "uuid_product", insertable = false, updatable = false)
+    @JsonIgnore
+    private Product product;
 }
