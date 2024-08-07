@@ -61,12 +61,12 @@ public class CartItem {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "uuid_user", referencedColumnName = "uuid_user", insertable = false, updatable = false)
     @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "uuid_product", referencedColumnName = "uuid_product", insertable = false, updatable = false)
     @JsonIgnore
     private Product product;

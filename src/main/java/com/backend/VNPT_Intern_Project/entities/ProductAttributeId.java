@@ -1,28 +1,14 @@
 package com.backend.VNPT_Intern_Project.entities;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
 public class ProductAttributeId implements Serializable {
     private String uuidProduct;
     private String uuidAttribute;
-
-    // Constructors, equals, hashCode
-    public String getUuidProduct() {
-        return uuidProduct;
-    }
-
-    public void setUuidProduct(String uuidProduct) {
-        this.uuidProduct = uuidProduct;
-    }
-
-    public String getUuidAttribute() {
-        return uuidAttribute;
-    }
-
-    public void setUuidAttribute(String uuidAttribute) {
-        this.uuidAttribute = uuidAttribute;
-    }
 
     @Override
     public boolean equals(Object o) {

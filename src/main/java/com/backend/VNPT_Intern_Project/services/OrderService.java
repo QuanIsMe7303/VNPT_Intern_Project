@@ -10,6 +10,7 @@ import com.backend.VNPT_Intern_Project.repositories.*;
 import com.backend.VNPT_Intern_Project.services.interfaces.IOrderInterface;
 import com.backend.VNPT_Intern_Project.utils.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class OrderService implements IOrderInterface {
 
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     public OrderDTOResponse createOrder(String uuidUser, OrderDTORequest orderDTORequest) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found with id: " + uuidUser));

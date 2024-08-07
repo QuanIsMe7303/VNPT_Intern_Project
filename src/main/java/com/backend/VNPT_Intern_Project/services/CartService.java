@@ -14,6 +14,7 @@ import com.backend.VNPT_Intern_Project.services.interfaces.ICartInterface;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class CartService implements ICartInterface {
     private UserRepository userRepository;
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     public List<CartItemDTOResponse> getCartItemsByUserID(String uuidUser) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found with id: " + uuidUser));
@@ -47,6 +49,7 @@ public class CartService implements ICartInterface {
     }
 
     @Override
+    @PreAuthorize("hasRole('USER')")
     public CartItemDTOResponse getCartItemById(String uuidCartItem) {
         CartItem cartItem = cartRepository.findById(uuidCartItem)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item is not found with id: " + uuidCartItem));
@@ -55,6 +58,7 @@ public class CartService implements ICartInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('USER')")
     public CartItemDTOResponse addCartItem(String uuidUser, CartItemDTORequest cartItemDTORequest) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found with id: " + uuidUser));
@@ -96,6 +100,7 @@ public class CartService implements ICartInterface {
 
 
     @Transactional
+    @PreAuthorize("hasRole('USER')")
     public CartItemDTOResponse updateCartItem(String uuidCartItem, CartItemDTORequest cartItemDTORequest) {
         CartItem cartItem = cartRepository.findById(uuidCartItem)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart item is not found with id: " + uuidCartItem));
@@ -117,6 +122,7 @@ public class CartService implements ICartInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('USER')")
     public CartItemDTOResponse deleteCartItem(String uuidCartItem) {
         CartItem cartItem = cartRepository.findById(uuidCartItem)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart Item is not found with id: " + uuidCartItem));

@@ -52,11 +52,11 @@ public class OrderItem {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "uuid_product")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "uuid_order")
     @JsonIgnoreProperties("orderItemList")
     private Order order;

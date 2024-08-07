@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -86,6 +87,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('CREATE_PRODUCT')")
     public ProductDTOResponse createProduct(ProductDTORequest productRequest) {
         Product product = new Product();
 
@@ -124,6 +126,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('UPDATE_PRODUCT')")
     public ProductDTOResponse updateProduct(String uuid_product, ProductDTORequest productRequest) {
         Product product = productRepository.findById(uuid_product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + uuid_product));
@@ -174,6 +177,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('DELETE_PRODUCT')")
     public ProductDTOResponse deleteProduct(String uuid_product) {
         Product product = productRepository.findById(uuid_product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + uuid_product));

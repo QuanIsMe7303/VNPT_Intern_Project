@@ -12,6 +12,7 @@ import com.backend.VNPT_Intern_Project.repositories.ProductRepository;
 import com.backend.VNPT_Intern_Project.services.interfaces.IAttributeInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 
@@ -27,6 +28,7 @@ public class AttributeService implements IAttributeInterface {
     private ProductAttributeRepository productAttributeRepository;
 
     @Transactional
+    @PreAuthorize("hasAuthority('ADD_ATTRIBUTE')")
     public AttributeDTOResponse addAttributeToProduct(AttributeDTORequest attributeRequest) {
         Product product = productRepository.findById(attributeRequest.getUuid_product())
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + attributeRequest.getUuid_product()));
@@ -60,6 +62,7 @@ public class AttributeService implements IAttributeInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('UPDATE_ATTRIBUTE')")
     public AttributeDTOResponse updateAttribute(String uuidProductAttribute, AttributeDTORequest attributeRequest) {
         ProductAttribute productAttribute = productAttributeRepository.findById(uuidProductAttribute)
                 .orElseThrow(() -> new ResourceNotFoundException("ProductAttribute is not found with id: " + uuidProductAttribute));
@@ -95,6 +98,7 @@ public class AttributeService implements IAttributeInterface {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('DELETE_ATTRIBUTE')")
     public AttributeDTOResponse deleteAttribute(String uuidProductAttribute) {
         ProductAttribute productAttribute = productAttributeRepository.findById(uuidProductAttribute)
                 .orElseThrow(() -> new ResourceNotFoundException("ProductAttribute is not found with id: " + uuidProductAttribute));

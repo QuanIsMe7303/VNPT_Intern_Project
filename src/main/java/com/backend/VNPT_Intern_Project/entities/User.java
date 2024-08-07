@@ -1,9 +1,7 @@
 package com.backend.VNPT_Intern_Project.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +10,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -27,10 +27,6 @@ public class User {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "uuid_user", updatable = false, nullable = false, columnDefinition = "VARCHAR(36)")
     private String uuidUser;
-
-//    @NotNull
-//    @Column(name = "uuid_cart")
-//    private String uuidCart;
 
     @Column(name = "first_name")
     private String firstName;
@@ -54,11 +50,9 @@ public class User {
     private String description;
 
     @Column(name = "password")
-    @NotNull
     private String password;
 
     @Column(name = "admin")
-    @NotNull
     private Integer admin;
 
     @Column(name = "register_date")
@@ -71,11 +65,42 @@ public class User {
     @Column(name = "activate")
     private Integer activate;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    private List<UserAddress> addressList;
+
+//    @ManyToOne
+//    @JoinColumn(name = "uuid_role")
+//    @JsonIgnoreProperties({"userList"})
+//    private Role role;
+
+//    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "uuid_user"),
+            inverseJoinColumns = @JoinColumn(name = "uuid_role")
+    )
+    private Set<Role> roleSet;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     private List<CartItem> cartItems;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     private List<Order> orderList;
 }
