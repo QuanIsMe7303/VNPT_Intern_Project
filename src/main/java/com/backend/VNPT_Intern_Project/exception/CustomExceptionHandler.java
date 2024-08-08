@@ -66,6 +66,12 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDetails> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorDetails errorDetails = new ErrorDetails("BAD_REQUEST", ex.getMessage(), 400, new Date());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex) {

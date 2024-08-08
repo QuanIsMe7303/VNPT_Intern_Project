@@ -1,9 +1,7 @@
 package com.backend.VNPT_Intern_Project.services;
 
 import com.backend.VNPT_Intern_Project.dtos.role.RoleDTOResponse;
-import com.backend.VNPT_Intern_Project.dtos.user.request.CreateUserDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.user.request.UpdateUserDTORequest;
-import com.backend.VNPT_Intern_Project.dtos.user.request.UserAddressDTORequest;
+import com.backend.VNPT_Intern_Project.dtos.user.request.*;
 import com.backend.VNPT_Intern_Project.dtos.user.response.UserAddressDTOResponse;
 import com.backend.VNPT_Intern_Project.dtos.user.response.UserDTOResponse;
 import com.backend.VNPT_Intern_Project.entities.*;
@@ -20,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -122,7 +121,7 @@ public class UserService implements IUserInterface {
 
     @Override
     @Transactional
-    @PostAuthorize("returnObject.getEmail() == authentication.name")
+    @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
     public UserDTOResponse updateUser(String uuidUser, UpdateUserDTORequest request) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
@@ -138,13 +137,39 @@ public class UserService implements IUserInterface {
         return convertToDTO(updatedUser);
     }
 
-//    public UserDTOResponse updateRole(String uuidUser, List<String> roles) {
-//        User user = userRepository.findById(uuidUser)
-//                .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
-//
-//        var roles = roleRepository.findAllByName(roles);
-//
-//    }
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserDTOResponse updateRole(String uuidUser, List<String> roleNames) {
+        for (String roleName : roleNames) {
+            if (!RoleConstants.isValidRole(roleName)) {
+                throw new IllegalArgumentException("Invalid role name: " + roleName);
+            }
+        }
+
+        User user = userRepository.findById(uuidUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        var roles = roleRepository.findAllByName(roleNames);
+        user.setRoleSet(new HashSet<>(roles));
+
+        userRepository.save(user);
+
+        return convertToDTO(user);
+    }
+
+    @Transactional
+    @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
+    public void changePassword(String uuidUser, ChangePasswordRequest request) {
+        User user = userRepository.findById(uuidUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
 
     @Override
     @Transactional
@@ -157,8 +182,25 @@ public class UserService implements IUserInterface {
         return convertToDTO(user);
     }
 
+    // address
+
+    @Override
+    @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
+    public List<UserAddressDTOResponse> getAddressesByUserUuid(String uuidUser) {
+        User user = userRepository.findById(uuidUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        List<UserAddress> addresses = userAddressRepository.findByUserUuidUser(uuidUser);
+
+        return addresses.stream()
+                .map(this::convertAddressToDTOResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
-    public UserAddressDTOResponse addAddress(String uuidUser, UserAddressDTORequest request) {
+    @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
+    public UserAddressDTOResponse addAddress(String uuidUser, AddNewAddressRequest request) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
 
@@ -166,12 +208,42 @@ public class UserService implements IUserInterface {
         address.setStreet(request.getStreet());
         address.setDistrict(request.getDistrict());
         address.setCity(request.getCity());
-        address.setPostalCode(request.getPostalCode());
-        address.setMobile(request.getMobile());
+        if (request.getPostalCode() != null) address.setPostalCode(request.getPostalCode());
+        if (request.getMobile() != null) address.setMobile(request.getMobile());
         address.setUser(user);
 
         userAddressRepository.save(address);
         return convertAddressToDTOResponse(address);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
+    public UserAddressDTOResponse deleteAddress(String uuidUserAddress) {
+        UserAddress userAddress = userAddressRepository.findById(uuidUserAddress)
+                .orElseThrow(() -> new ResourceNotFoundException("Address is not exist"));
+
+        userAddressRepository.delete(userAddress);
+
+        return convertAddressToDTOResponse(userAddress);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("@userService.isValidToModifyAddress(authentication, #uuidUserAddress)")
+    public UserAddressDTOResponse updateAddress(String uuidAddress, UpdateAddressRequest request) {
+        UserAddress userAddress = userAddressRepository.findById(uuidAddress)
+                .orElseThrow(() -> new ResourceNotFoundException("Address is not exist"));
+
+        userAddress.setStreet(request.getStreet());
+        userAddress.setDistrict(request.getDistrict());
+        userAddress.setCity(request.getCity());
+        if (request.getPostalCode() != null) userAddress.setPostalCode(request.getPostalCode());
+        if (request.getMobile() != null) userAddress.setMobile(request.getMobile());
+
+        userAddressRepository.save(userAddress);
+
+        return convertAddressToDTOResponse(userAddress);
     }
 
     private UserAddressDTOResponse convertAddressToDTOResponse(UserAddress userAddress) {
@@ -234,6 +306,21 @@ public class UserService implements IUserInterface {
         }
 
         return userDTO;
+    }
+
+    // Authentication
+    public boolean isValidToModifyAddress(Authentication authentication, String uuidUserAddress) {
+        UserAddress userAddress = userAddressRepository.findById(uuidUserAddress)
+                .orElseThrow(() -> new ResourceNotFoundException("Address is not exist"));
+
+        return userAddress.getUser().getEmail().equals(authentication.getName());
+    }
+
+    public boolean isValidUser(Authentication authentication, String uuidUser) {
+        User user = userRepository.findById(uuidUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
+
+        return user.getEmail().equals(authentication.getName());
     }
 
 }
