@@ -13,7 +13,10 @@ import com.backend.VNPT_Intern_Project.repositories.UserAddressRepository;
 import com.backend.VNPT_Intern_Project.repositories.UserRepository;
 import com.backend.VNPT_Intern_Project.services.interfaces.IUserInterface;
 import com.backend.VNPT_Intern_Project.utils.RoleConstants;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -43,6 +46,9 @@ public class UserService implements IUserInterface {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @PostAuthorize("returnObject.getEmail() == authentication.name")
     @Override
@@ -177,6 +183,11 @@ public class UserService implements IUserInterface {
     public UserDTOResponse deleteUser(String uuidUser) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
+
+        String deleteFromUserRole = "DELETE FROM user_role WHERE uuid_user = :uuidUser";
+        entityManager.createNativeQuery(deleteFromUserRole)
+                .setParameter("uuidUser", uuidUser)
+                .executeUpdate();
 
         userRepository.delete(user);
         return convertToDTO(user);
