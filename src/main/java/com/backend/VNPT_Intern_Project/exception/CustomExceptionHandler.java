@@ -4,7 +4,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,6 +59,18 @@ public class CustomExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorDetails> handleAuthenticationException(AuthenticationException ex) {
         ErrorDetails errorDetails = new ErrorDetails("UNAUTHENTICATED", ex.getMessage(), 401, new Date());
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthenticationServiceException.class)
+    public ResponseEntity<ErrorDetails> handleAuthenticationServiceException(AuthenticationServiceException ex) {
+        ErrorDetails errorDetails = new ErrorDetails("SERVICE_UNAVAILABLE", ex.getMessage(), 503, new Date());
+        return new ResponseEntity<>(errorDetails, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorDetails> handleJwtException(JwtException ex) {
+        ErrorDetails errorDetails = new ErrorDetails("INVALID_TOKEN", ex.getMessage(), 401, new Date());
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 

@@ -12,5 +12,4 @@ import java.text.ParseException;
 public interface IAuthService {
     IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException;
     AuthenticationResponse authenticate(AuthenticationRequest request);
-    String generateToken(User user);
 }

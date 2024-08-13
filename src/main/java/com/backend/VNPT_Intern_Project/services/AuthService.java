@@ -2,12 +2,15 @@ package com.backend.VNPT_Intern_Project.services;
 
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationRequest;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationResponse;
+import com.backend.VNPT_Intern_Project.dtos.authentication.LogoutRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectResponse;
+import com.backend.VNPT_Intern_Project.entities.InvalidatedToken;
 import com.backend.VNPT_Intern_Project.entities.Permission;
 import com.backend.VNPT_Intern_Project.entities.Role;
 import com.backend.VNPT_Intern_Project.entities.User;
 import com.backend.VNPT_Intern_Project.exception.ResourceNotFoundException;
+import com.backend.VNPT_Intern_Project.repositories.InvalidateTokenRepository;
 import com.backend.VNPT_Intern_Project.repositories.PermissionRepository;
 import com.backend.VNPT_Intern_Project.repositories.RoleRepository;
 import com.backend.VNPT_Intern_Project.repositories.UserRepository;
@@ -33,6 +36,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -41,11 +45,15 @@ import java.util.StringJoiner;
 public class AuthService implements IAuthService {
     @Autowired
     private PermissionRepository permissionRepository;
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private InvalidateTokenRepository invalidateTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -57,14 +65,20 @@ public class AuthService implements IAuthService {
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         String token = request.getToken();
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        boolean isVerified = signedJWT.verify(verifier);
+        boolean isValid = true;
+
+        try {
+            verifyToken(token);
+        } catch (AuthenticationException e) {
+            log.error("Token validation failed: {}", e.getMessage());
+            isValid = false;
+        }
+
         return IntrospectResponse.builder()
-                .valid(isVerified && expiredTime.after(new Date()))
+                .valid(isValid)
                 .build();
     }
+
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -74,7 +88,7 @@ public class AuthService implements IAuthService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) {
-            throw new AuthenticationException("Unauthenticated") {};
+            throw new AuthenticationException("UNAUTHENTICATED") {};
         }
         String token = generateToken(user);
 
@@ -84,9 +98,43 @@ public class AuthService implements IAuthService {
                 .build();
     }
 
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        SignedJWT signToken = verifyToken(request.getToken());
+
+        String jti = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = new InvalidatedToken(jti, expiryTime);
+
+        invalidateTokenRepository.save(invalidatedToken);
+
+    }
+
+    private SignedJWT verifyToken(String token) throws ParseException, JOSEException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean isVerified = signedJWT.verify(verifier);
+
+        if (!isVerified) {
+            throw new AuthenticationException("Token signature verification failed") {};
+        }
+
+        if (expiredTime.before(new Date())) {
+            throw new AuthenticationException("Token has expired") {};
+        }
+
+        if (invalidateTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AuthenticationException("Token has been invalidated") {};
+        }
+
+        return signedJWT;
+    }
+
+
     // Tao access_token
-    @Override
-    public String generateToken(User user) {
+    private String generateToken(User user) {
 
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -97,6 +145,7 @@ public class AuthService implements IAuthService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
 

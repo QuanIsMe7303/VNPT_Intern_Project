@@ -3,6 +3,7 @@ package com.backend.VNPT_Intern_Project.controllers;
 import com.backend.VNPT_Intern_Project.dtos.ApiResponse;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationRequest;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationResponse;
+import com.backend.VNPT_Intern_Project.dtos.authentication.LogoutRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectResponse;
 import com.backend.VNPT_Intern_Project.services.AuthService;
@@ -35,6 +36,14 @@ public class AuthController {
                 new ApiResponse<>(HttpStatus.CREATED.value(), "SUCCESS", authResponse);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        ApiResponse<?> response =
+                new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", null);
+        authService.logout(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/introspect")
