@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 
-public class LogoutRequest {
+public class RefreshRequest {
     private String token;
 }

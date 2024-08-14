@@ -4,6 +4,7 @@ import com.backend.VNPT_Intern_Project.dtos.ApiResponse;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationRequest;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationResponse;
 import com.backend.VNPT_Intern_Project.dtos.authentication.LogoutRequest;
+import com.backend.VNPT_Intern_Project.dtos.authentication.RefreshRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectResponse;
 import com.backend.VNPT_Intern_Project.services.AuthService;
@@ -44,6 +45,16 @@ public class AuthController {
                 new ApiResponse<>(HttpStatus.OK.value(), "SUCCESS", null);
         authService.logout(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody @Valid RefreshRequest request) throws ParseException, JOSEException {
+        AuthenticationResponse authResponse = authService.refreshToken(request);
+
+        ApiResponse<AuthenticationResponse> response =
+                new ApiResponse<>(HttpStatus.CREATED.value(), "SUCCESS", authResponse);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/introspect")

@@ -3,6 +3,7 @@ package com.backend.VNPT_Intern_Project.services;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationRequest;
 import com.backend.VNPT_Intern_Project.dtos.authentication.AuthenticationResponse;
 import com.backend.VNPT_Intern_Project.dtos.authentication.LogoutRequest;
+import com.backend.VNPT_Intern_Project.dtos.authentication.RefreshRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectRequest;
 import com.backend.VNPT_Intern_Project.dtos.introspect.IntrospectResponse;
 import com.backend.VNPT_Intern_Project.entities.InvalidatedToken;
@@ -62,13 +63,21 @@ public class AuthService implements IAuthService {
     @Value("${jwt.secretKey}")
     protected String SIGNER_KEY;
 
+    @NonFinal
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
+
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         String token = request.getToken();
         boolean isValid = true;
 
         try {
-            verifyToken(token);
+            verifyToken(token, false);
         } catch (AuthenticationException e) {
             log.error("Token validation failed: {}", e.getMessage());
             isValid = false;
@@ -99,22 +108,48 @@ public class AuthService implements IAuthService {
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
-        SignedJWT signToken = verifyToken(request.getToken());
+        try {
+            SignedJWT signToken = verifyToken(request.getToken(), false);
+            String jti = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
 
-        String jti = signToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+            InvalidatedToken invalidatedToken = new InvalidatedToken(jti, expiryTime);
 
-        InvalidatedToken invalidatedToken = new InvalidatedToken(jti, expiryTime);
-
-        invalidateTokenRepository.save(invalidatedToken);
-
+            invalidateTokenRepository.save(invalidatedToken);
+        } catch (Exception e) {
+            log.info("Token is expired ");
+        }
     }
 
-    private SignedJWT verifyToken(String token) throws ParseException, JOSEException {
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var signedJWT = verifyToken(request.getToken(), true);
+
+        var jti = signedJWT.getJWTClaimsSet().getJWTID();
+        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = new InvalidatedToken(jti, expiryTime);
+        invalidateTokenRepository.save(invalidatedToken);
+
+        String email = signedJWT.getJWTClaimsSet().getSubject();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User is not found with email: " + email));
+
+        String token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
+    }
+
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws ParseException, JOSEException {
         SignedJWT signedJWT = SignedJWT.parse(token);
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
-        Date expiredTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiredTime = (isRefresh)
+                ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
+                        .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
         boolean isVerified = signedJWT.verify(verifier);
 
         if (!isVerified) {
@@ -143,7 +178,7 @@ public class AuthService implements IAuthService {
                 .issuer("quan.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
                 ))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
