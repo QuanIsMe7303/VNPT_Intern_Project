@@ -12,6 +12,8 @@ import com.backend.VNPT_Intern_Project.repositories.ProductRepository;
 import com.backend.VNPT_Intern_Project.services.interfaces.IProductInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +41,7 @@ public class ProductService implements IProductInterface {
 
     // GET methods
     @Override
+    @Cacheable(value = "allProducts", key = "#pageable.pageNumber")
     public List<ProductDTOResponse> getAllProducts(Pageable pageable) {
         Page<Product> products = productRepository.findAll(pageable);
         return products.stream()
@@ -46,6 +49,8 @@ public class ProductService implements IProductInterface {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Cacheable(value = "products", key = "#uuid_product")
     public ProductDTOResponse getProductById(String uuid_product) {
         Product product = productRepository.findById(uuid_product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + uuid_product));
@@ -54,6 +59,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Override
+    @Cacheable(value = "productsByBrand", key = "{#brandName, #pageable.pageNumber}")
     public List<ProductDTOResponse> getProductsByBrandName(String brandName, Pageable pageable) {
         Page<Product> products = productRepository.findByBrandName(brandName, pageable);
         if (products.isEmpty()) {
@@ -65,6 +71,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Override
+    @Cacheable(value = "productsByCategory", key = "{#categoryTitle, #pageable.pageNumber}")
     public List<ProductDTOResponse> getProductsByCategoryName(String categoryTitle, Pageable pageable) {
         Page<Product> products = productRepository.findByCategoryTitle(categoryTitle, pageable);
         if (products.isEmpty()) {
@@ -76,6 +83,7 @@ public class ProductService implements IProductInterface {
     }
 
     @Override
+    @Cacheable(value = "productsByBrandAndCategory", key = "{#brandName, #categoryTitle, #pageable.pageNumber}")
     public List<ProductDTOResponse> getProductsByBrandAndCategory(String brandName, String categoryTitle, Pageable pageable) {
         Page<Product> products = productRepository.findByBrandNameAndCategoryTitle(brandName, categoryTitle, pageable);
         if (products.isEmpty()) {
@@ -88,6 +96,7 @@ public class ProductService implements IProductInterface {
 
     @Transactional
     @PreAuthorize("hasAuthority('CREATE_PRODUCT')")
+    @CacheEvict(value = {"products", "allProducts", "productsByBrand", "productsByCategory", "productsByBrandAndCategory"}, allEntries = true)
     public ProductDTOResponse createProduct(ProductDTORequest productRequest) {
         Product product = new Product();
 
@@ -127,6 +136,7 @@ public class ProductService implements IProductInterface {
 
     @Transactional
     @PreAuthorize("hasAuthority('UPDATE_PRODUCT')")
+    @CacheEvict(value = {"products", "allProducts", "productsByBrand", "productsByCategory", "productsByBrandAndCategory"}, allEntries = true)
     public ProductDTOResponse updateProduct(String uuid_product, ProductDTORequest productRequest) {
         Product product = productRepository.findById(uuid_product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + uuid_product));
@@ -178,6 +188,7 @@ public class ProductService implements IProductInterface {
 
     @Transactional
     @PreAuthorize("hasAuthority('DELETE_PRODUCT')")
+    @CacheEvict(value = {"products", "allProducts", "productsByBrand", "productsByCategory", "productsByBrandAndCategory"}, allEntries = true)
     public ProductDTOResponse deleteProduct(String uuid_product) {
         Product product = productRepository.findById(uuid_product)
                 .orElseThrow(() -> new ResourceNotFoundException("Product is not found with id: " + uuid_product));

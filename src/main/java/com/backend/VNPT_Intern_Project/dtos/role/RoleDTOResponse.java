@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class RoleDTOResponse {
+public class RoleDTOResponse implements Serializable {
     private String uuidRole;
     private String name;
     private Set<String> permissionSet;

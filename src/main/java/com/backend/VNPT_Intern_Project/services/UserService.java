@@ -19,6 +19,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -50,8 +52,9 @@ public class UserService implements IUserInterface {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @PostAuthorize("returnObject.getEmail() == authentication.name")
     @Override
+    @PostAuthorize("returnObject.getEmail() == authentication.name")
+    @Cacheable(value = "users", key = "#uuidUser")
     public UserDTOResponse getUserById(String uuidUser) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + uuidUser));
@@ -64,6 +67,7 @@ public class UserService implements IUserInterface {
 
     @Override
     @PreAuthorize("hasAuthority('GET_ALL_USERS')")
+    @Cacheable(value = "users")
     public List<UserDTOResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
@@ -82,15 +86,31 @@ public class UserService implements IUserInterface {
         var context = SecurityContextHolder.getContext();
         String email = context.getAuthentication().getName();
 
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-        Set<Role> roleSet = roleRepository.findRolesByEmail(email);
-        user.setRoleSet(roleSet);
+        Set<Role> roleSet = roleRepository.findRolesByUserUuid(user.getUuidUser());
 
-        return convertToDTO(user);
+        UserDTOResponse userDTOResponse = convertToDTO(user);
+        Set<RoleDTOResponse> roleDTOResponseList = new HashSet<>();
+
+        roleSet.forEach(role -> {
+            RoleDTOResponse roleDTOResponse = new RoleDTOResponse();
+            roleDTOResponse.setUuidRole(role.getUuidRole());
+            roleDTOResponse.setName(role.getName());
+
+            Set<Permission> permissionSet = permissionRepository.findPermissionsByRoleName(role.getName());
+            roleDTOResponse.setPermissionSet(permissionSet
+                    .stream()
+                    .map(Permission::getName)
+                    .collect(Collectors.toSet()));
+            roleDTOResponseList.add(roleDTOResponse);
+        });
+
+        userDTOResponse.setRoles(roleDTOResponseList);
+        return userDTOResponse;
     }
+
 
     @Transactional
     @Override
@@ -128,6 +148,7 @@ public class UserService implements IUserInterface {
     @Override
     @Transactional
     @PreAuthorize("@userService.isValidUser(authentication, #uuidUser)")
+    @CacheEvict(value = "users", key = "#uuidUser")
     public UserDTOResponse updateUser(String uuidUser, UpdateUserDTORequest request) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));
@@ -180,6 +201,7 @@ public class UserService implements IUserInterface {
     @Override
     @Transactional
     @PreAuthorize("hasAuthority('DELETE_USER')")
+    @CacheEvict(value = "users", key = "#uuidUser")
     public UserDTOResponse deleteUser(String uuidUser) {
         User user = userRepository.findById(uuidUser)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not exist"));

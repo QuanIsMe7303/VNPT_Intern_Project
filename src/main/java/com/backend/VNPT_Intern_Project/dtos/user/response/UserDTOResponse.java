@@ -4,6 +4,8 @@ import com.backend.VNPT_Intern_Project.dtos.role.RoleDTOResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserDTOResponse {
+public class UserDTOResponse implements Serializable {
     private String uuidUser;
 
     private String firstName;
@@ -42,7 +44,7 @@ public class UserDTOResponse {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class UserAddressResponse {
+    public static class UserAddressResponse implements Serializable{
          private String uuidAddress;
          private String mobile;
          private String street;

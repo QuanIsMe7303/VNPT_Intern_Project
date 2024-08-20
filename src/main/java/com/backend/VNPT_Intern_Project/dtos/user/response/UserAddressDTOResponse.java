@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class UserAddressDTOResponse {
+public class UserAddressDTOResponse implements Serializable {
     private String uuidUser;
     private String uuidAddress;
     private String street;

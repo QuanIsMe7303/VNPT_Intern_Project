@@ -26,6 +26,12 @@ public class SecurityConfig {
             "api/auth/refresh"
     };
 
+    private final String[] PUBLIC_GET_ENDPOINTS = {
+            "/api/products",
+            "/api/products/{uuidProduct}",
+            "/api/brands"
+    };
+
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
@@ -33,6 +39,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
 //                        .requestMatchers("/api/users").hasRole(RoleConstants.ADMIN.getRoleName())
 //                        .requestMatchers("/api/products").hasRole(RoleConstants.ADMIN.getRoleName())
                         .anyRequest()

@@ -2,11 +2,12 @@ package com.backend.VNPT_Intern_Project.dtos.product;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ProductDTOResponse {
+public class ProductDTOResponse implements Serializable {
     private String uuidProduct;
     private String title;
     private String metaTitle;
@@ -23,19 +24,19 @@ public class ProductDTOResponse {
     private List<AttributeProductResponse> otherAttributes;
 
     @Data
-    public static class BrandProductResponse {
+    public static class BrandProductResponse implements Serializable{
         private String uuidBrand;
         private String name;
     }
 
     @Data
-    public static class CategoryProductResponse {
+    public static class CategoryProductResponse implements Serializable{
         private String uuidCategory;
         private String title;
     }
 
     @Data
-    public static class AttributeProductResponse {
+    public static class AttributeProductResponse implements Serializable{
         private String key;
         private List<String> values;
     }
